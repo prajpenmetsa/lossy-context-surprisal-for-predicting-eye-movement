@@ -38,16 +38,18 @@ for (b in betas) {
 
   # Merge with the full dataframes
   df_b <- df %>%
+    mutate(sent_id_num = as.numeric(as.character(sent_id))) %>%
     left_join(lossy_b,
-              by = c("sent_id" = "global_sent_idx",   # sent_id was factored; need to match
-                     "word_idx" = "word_idx")) %>%
+              by = c("sent_id_num" = "global_sent_idx",
+                     "word_idx"    = "word_idx")) %>%
     filter(!is.na(lossy_surprisal)) %>%
     mutate(lossy_z = scale(lossy_surprisal)[,1])
 
   df_fix_b <- df_fix %>%
+    mutate(sent_id_num = as.numeric(as.character(sent_id))) %>%
     left_join(lossy_b,
-              by = c("sent_id" = "global_sent_idx",
-                     "word_idx" = "word_idx")) %>%
+              by = c("sent_id_num" = "global_sent_idx",
+                     "word_idx"    = "word_idx")) %>%
     filter(!is.na(lossy_surprisal)) %>%
     mutate(lossy_z = scale(lossy_surprisal)[,1])
 
