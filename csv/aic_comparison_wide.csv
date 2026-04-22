@@ -1,0 +1,7 @@
+beta,FFD_delta_aic,GD_delta_aic,TRT_delta_aic,reg_delta_aic,FFD_p_lrt,GD_p_lrt,TRT_p_lrt,reg_p_lrt,FFD_sig,GD_sig,TRT_sig,reg_sig
+0.1,NA,NA,27.88,23.06,NA,NA,0,0,,,*,*
+0.3,NA,NA,16.94,26.04,NA,NA,0,0,,,*,*
+0.5,NA,NA,10.22,46.4,NA,NA,5e-4,0,,,*,*
+0.7,NA,4.81,7.46,44.2,NA,0.0091,0.0021,0,,*,*,*
+0.9,NA,NA,-1.81,22.17,NA,NA,0.6595,0,,,,*
+1,NA,-2,-2.31,-2,NA,0.9938,1,1,,,,
