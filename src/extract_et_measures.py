@@ -10,7 +10,7 @@ Outputs et_measures.csv with columns:
 
 Usage:
   pip install scipy numpy pandas
-  python extract_et_measures.py --data_dir zuco_ET/ --out et_measures.csv
+  python extract_et_measures.py --data_dir dataset/zuco_ET/ --out et_measures.csv
 """
 
 import os, re, glob, argparse
@@ -118,7 +118,23 @@ def compute_measures(sent_fix, word_bounds):
             if widx >= 0:
                 prev_wi = widx
 
-        rows.append(dict(word_idx=wi, FFD=ffd, GD=gd, TRT=trt, nFix=n_fix, reg=int(reg)))
+        # GPT: all fixations from first landing until first rightward exit
+        gpt = 0.0
+        on_target_gpt = False
+        for fo, widx, dur in assignments:
+            if fo < first_fo:
+                continue
+            if widx == wi:
+                on_target_gpt = True
+            if on_target_gpt:
+                if widx > wi:
+                    break
+                if widx >= 0:
+                    gpt += dur
+        gpt = gpt if gpt > 0 else np.nan
+
+        rows.append(dict(word_idx=wi, FFD=ffd, GD=gd, GPT=gpt,
+                         TRT=trt, nFix=n_fix, reg=int(reg)))
     return rows
 
 
@@ -162,7 +178,7 @@ def process_subject(subj_dir, subj_id):
                     all_rows.append(dict(subject=subj_id, session=session,
                                         global_sent_idx=g_idx, local_sent_idx=local_idx,
                                         word_idx=wi, word_count=len(word_bounds),
-                                        FFD=np.nan, GD=np.nan, TRT=np.nan, nFix=0, reg=0))
+                                        FFD=np.nan, GD=np.nan, GPT=np.nan, TRT=np.nan, nFix=0, reg=0))
                 continue
 
             for wr in compute_measures(sent_fix, word_bounds):
@@ -201,7 +217,7 @@ def main():
 
     df = pd.DataFrame(all_rows)
     col_order = ['subject','session','global_sent_idx','local_sent_idx',
-                 'word_idx','word_count','FFD','GD','TRT','nFix','reg']
+                 'word_idx','word_count','FFD','GD','GPT','TRT','nFix','reg']
     df = df[[c for c in col_order if c in df.columns]]
     df.sort_values(['subject','session','local_sent_idx','word_idx'], inplace=True)
     df.to_csv(args.out, index=False)
@@ -211,7 +227,7 @@ def main():
     print(f'Subjects : {df["subject"].nunique()}')
     print(f'Sentences: {df["global_sent_idx"].nunique()}')
     print(f'\nMeasure summary (ms):')
-    print(df[['FFD','GD','TRT','nFix']].describe().round(1).to_string())
+    print(df[['FFD','GD','GPT','TRT','nFix']].describe().round(1).to_string())
     print(f'\nFixation coverage: {df["FFD"].notna().mean():.1%} of words had ≥1 fixation')
 
 if __name__ == '__main__':

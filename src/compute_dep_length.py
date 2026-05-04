@@ -66,7 +66,7 @@ def compute_dep_lengths(sentences, nlp):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--sentences', default='dataset/sentencesSR.mat')
+    parser.add_argument('--sentences', default='sentencesSR.mat')
     parser.add_argument('--out',       default='dep_length.csv')
     args = parser.parse_args()
 
